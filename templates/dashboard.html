@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .dashboard-page {
+        padding: 0 1rem;
+    }
+
+    .main-title {
+        font-size: 2.5rem !important; 
+        font-weight: 800;
+        letter-spacing: -1.5px;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+    }
+
+    .sub-title {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        opacity: 0.8;
+    }
+
+    /* --- LÀM LẠI BỘ LỌC (SELECT & BUTTON) --- */
+    .modern-filter-bar {
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        padding: 0.6rem 1.25rem;
+        border-radius: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    }
+
+    .filter-unit {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-unit label {
+        font-size: 0.55rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: var(--accent-gold);
+        letter-spacing: 0.8px;
+        margin-bottom: 1px;
+    }
+
+    .filter-unit select {
+        border: none;
+        background: transparent;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--text-main);
+        cursor: pointer;
+        outline: none;
+        padding: 0;
+    }
+
+    .btn-refresh-mini {
+        background: rgba(0,0,0,0.03);
+        border: none;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        color: var(--text-main);
+    }
+    .btn-refresh-mini:hover { background: var(--primary-navy); color: white; }
+
+    /* --- BENTO SCORE CARDS --- */
+    .bento-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .bento-card {
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        padding: 1.5rem !important;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 90px;
+        transition: 0.3s ease;
+    }
+
+    .bento-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--accent-gold);
+    }
+
+    .bento-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .bento-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        margin: 0.5rem 0;
+    }
+
+    /* Biểu đồ */
+    .chart-container-box {
+        background: var(--glass-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        padding: 2rem !important;
+    }
+
+    @media (max-width: 992px) {
+        .bento-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="dashboard-page">
+    <h1 class="main-title">Thị Trường & Sentiment</h1>
+    <p class="sub-title">Phân tích dữ liệu giai đoạn 2010 - 2022 dựa trên hệ thống Sentiment Analysis.</p>
+
+    <div class="modern-filter-bar">
+        <div class="filter-unit">
+            <label>Ticker</label>
+            <select id="tickerSelect">
+                <option value="all">Tất cả công ty</option>
+                {% for t in tickers %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+            </select>
+        </div>
+        
+        <div class="vr opacity-10" style="height: 20px;"></div>
+
+        <div class="filter-unit">
+            <label>Năm tài chính</label>
+            <select id="yearSelect">
+                <option value="all">Giai đoạn 2010-2022</option>
+                {# Loop dừng ở 2023 để lấy giá trị cuối là 2022 #}
+                {% for y in range(2010, 2023) %}
+                    <option value="{{ y }}">{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button class="btn-refresh-mini" onclick="resetFilter()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+    </div>
+
+    <div class="bento-row">
+        <div class="bento-card shadow-sm">
+            <div>
+                <span class="bento-label">Tổng Tin Tức</span>
+                <div id="newsCount" class="bento-value">--</div>
+            </div>
+        </div>
+
+        <div class="bento-card shadow-sm">
+            <div>
+                <span class="bento-label">Điểm SEN Trung Bình</span>
+                <div id="senScore" class="bento-value text-info">--</div>
+            </div>
+        </div>
+
+        <div class="bento-card shadow-sm border-start border-4 border-warning">
+            <div>
+                <span class="bento-label">Trạng Thái Hệ Thống</span>
+                <div id="actualStatus" class="bento-value" style="font-size: 1.6rem;">--</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-container-box shadow-sm">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="fw-800 m-0">Biểu đồ Xu hướng Sentiment</h4>
+                <p class="text-muted small m-0">Dữ liệu biến động tâm lý (2010 - 2022)</p>
+            </div>
+        </div>
+        <div style="height: 380px;">
+            <canvas id="senLineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
