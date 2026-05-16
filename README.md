@@ -239,7 +239,3 @@ GET /api/download_template
 ## 📧 Liên Hệ
 
 Nếu có câu hỏi hoặc gợi ý, vui lòng tạo issue hoặc liên hệ trực tiếp.
-
----
-
-**Last Updated**: 2026-05-16
