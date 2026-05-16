@@ -230,12 +230,3 @@ GET /api/download_template
 - Mô hình hiện tại được huấn luyện trên dữ liệu từ 2010-2022
 - Cần cập nhật mô hình định kỳ với dữ liệu mới
 
-## 👨‍💼 Thông Tin Dự Án
-
-**Loại**: Khóa luận tốt nghiệp (KLTN)
-**Ngôn ngữ chính**: Python (92.8%)
-**Framework chính**: Flask, Scikit-learn
-
-## 📧 Liên Hệ
-
-Nếu có câu hỏi hoặc gợi ý, vui lòng tạo issue hoặc liên hệ trực tiếp.
