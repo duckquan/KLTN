@@ -176,12 +176,6 @@ def main():
         df = pd.read_csv(INPUT_FILE)
         tickers = df['ticker'].unique()
         print(f"Tổng số công ty ban đầu: {len(tickers)}")
-        
-        # # --- BƯỚC LỌC BỎ SCR ---
-        # if 'SCR' in tickers:
-        #     tickers = [t for t in tickers if t != 'SCR']
-        #     print("🚫 Đã loại bỏ mã 'SCR' khỏi danh sách chạy (Skip).")
-        # # -----------------------
             
     except:
         print("Lỗi đọc file CSV")
