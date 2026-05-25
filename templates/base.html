@@ -174,7 +174,7 @@
 
                     {% if session.get('user_id') %}
                         <div class="d-none d-lg-block text-end me-2">
-                            <div class="small fw-bold text-muted" style="font-size: 0.7rem;">WELCOME BACK</div>
+                            <div class="fw-bold" style="font-size: 0.7rem;">WELCOME BACK</div>
                             <div class="fw-bold" style="line-height: 1;">{{ session.get('username') }}</div>
                         </div>
                         <a href="{{ url_for('logout') }}" class="btn-auth" style="background: #dc2626 !important; color: white !important;">
