@@ -265,7 +265,7 @@ def predict_batch():
             results.append({
                 'Ticker': str(row.get('Ticker', row.get('Code', 'N/A'))), 
                 'Prob': round(prob * 100, 2), 
-                'Status': "Distress Risk" if prob > 0.55 else "Healthy"
+                'Status': "Distress Risk" if prob > 0.5 else "Healthy"
             })
             
         return jsonify(results)
