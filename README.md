@@ -99,7 +99,7 @@ Truy cập: **http://localhost:5000**
 ## 👤 Đăng Nhập Mặc Định
 
 ```
-Username: admin
+Username: adminuet
 Password: 123456
 ```
 
